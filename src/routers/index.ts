@@ -1,13 +1,11 @@
 import { Router } from "express";
 
 import testRouter from "./testRouter.js";
-// import authRouter from "./authRouter.js";
-// import transactionRouter from "./transactionRouter.js";
+import xboxProfilesRouter from "./xboxProfilesRouter.js";
 
 const router = Router();
 
 router.use(testRouter);
-// router.use("/auth/", authRouter);
-// router.use("/transaction/", transactionRouter);
+router.use("/profile", xboxProfilesRouter);
 
 export default router;

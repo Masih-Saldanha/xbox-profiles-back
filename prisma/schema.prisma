@@ -21,3 +21,10 @@ model Users {
 }
 
 // TO CONTINUE: Fazer modelos completos
+model accountsId {
+  id       Int    @id @default(autoincrement())
+  gamertag String
+  xuid     String
+
+  @@map("accountsid")
+}
