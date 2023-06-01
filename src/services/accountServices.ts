@@ -101,15 +101,6 @@ async function getLastAchievements(gamertag: string, amount: number = 10) {
     return achievementsArray;
 };
 
-// // Lista todos os jogos
-// async function getAllGames(gamertag: string) {
-//     const xuid = await returnXuid(gamertag);
-//     const xl = await xboxRequester();
-//     const request = await xl.people.games.get(xuid);
-//     // console.log(request.titles.length)
-//     return request;
-// };
-
 // Mostra se está on-line e onde jogou o último jogo (titleId) (PC incluso)
 async function getStatusOnLine(gamertag: string) {
     const xuid = await returnXuid(gamertag);
@@ -162,6 +153,15 @@ async function getFriendsList(gamertag: string, page: number = 0, pagination: nu
     return friendsArray;
 };
 
+// // Lista todos os jogos
+// async function getAllGames(gamertag: string) {
+//     const xuid = await returnXuid(gamertag);
+//     const xl = await xboxRequester();
+//     const request = await xl.people.games.get(xuid);
+//     // console.log(request.titles.length)
+//     return request;
+// };
+
 // // Lista TODAS as conquistas
 // async function getAllAchievements(gamertag: string) {
 //     const xuid = await returnXuid(gamertag);
@@ -202,13 +202,14 @@ async function getFriendsList(gamertag: string, page: number = 0, pagination: nu
 // });
 
 const accountServices = {
+    xboxRequester,
     getAccountData,
     getAchievements,
     getLastAchievements,
-    // getAllGames,
     getStatusOnLine,
     getLastClips,
     getFriendsList,
+    // getAllGames,
     // getAllAchievements,
     // getAllGamesAndAchievementsList,
 };
