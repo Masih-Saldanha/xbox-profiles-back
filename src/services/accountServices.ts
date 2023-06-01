@@ -46,58 +46,93 @@ async function getAccountData(gamertag: string) {
 };
 
 // Lista todos os jogos e conquistas totais de cada
-async function getAchievements(gamertag: string) {
+async function getAchievements(gamertag: string, page: number = 0, pagination: number = 10) {
     const xuid = await returnXuid(gamertag);
     const xl = await xboxRequester();
     const request = await xl.people.achievement.all.get(xuid);
-    return request;
+    const paginatedData = request.titles.slice((page * pagination), ((page * pagination) + pagination));
+    const achievementsArray = [];
+    for (const element of paginatedData) {
+        const data = {
+            titleId: element.titleId,
+            name: element.name,
+            type: element.type,
+            displayImage: element.displayImage,
+            achievement: {
+                currentAchievements: element.achievement.currentAchievements,
+                totalAchievements: element.achievement.totalAchievements,
+                currentGamerscore: element.achievement.currentGamerscore,
+                totalGamerscore: element.achievement.totalGamerscore,
+                progressPercentage: element.achievement.progressPercentage,
+            },
+            isGamePass: element.gamePass.isGamePass,
+            lastTimePlayed: element.titleHistory.lastTimePlayed,
+            xboxLiveTier: element.xboxLiveTier,
+        };
+        achievementsArray.push(data);
+    };
+    return achievementsArray;
 };
 
 // Lista as últimas conquistas
-async function getLastAchievements(gamertag: string, amount: number = 15) {
+async function getLastAchievements(gamertag: string, amount: number = 10) {
     const xuid = await returnXuid(gamertag);
     const xl = await xboxRequester();
     const request = await xl.people.activity.get(xuid, amount);
-    return request;
+    const achievementsArray = [];
+    for (const element of request.activityItems) {
+        const data = {
+            contentTitle: element.contentTitle,
+            contentImageUri: element.contentImageUri,
+            titleId: element.titleId,
+            achievementName: element.achievementName,
+            achievementDescription: element.achievementDescription,
+            description: element.description,
+            achievementIcon: element.achievementIcon,
+            gamerscore: element.gamerscore,
+            date: element.date,
+            rarity: element.activity.rarityCategory,
+            isSecret: element.isSecret,
+            contentType: element.contentType,
+            platform: element.platform,
+        }
+        achievementsArray.push(data);
+    }
+    return achievementsArray;
 };
 
-// Lista todos os jogos
-async function getAllGames(gamertag: string) {
-    const xuid = await returnXuid(gamertag);
-    const xl = await xboxRequester();
-    const request = await xl.people.games.get(xuid);
-    return request;
-};
+// // Lista todos os jogos
+// async function getAllGames(gamertag: string) {
+//     const xuid = await returnXuid(gamertag);
+//     const xl = await xboxRequester();
+//     const request = await xl.people.games.get(xuid);
+//     // console.log(request.titles.length)
+//     return request;
+// };
 
 // Mostra se está on-line e onde jogou o último jogo (titleId) (PC incluso)
 async function getStatusOnLine(gamertag: string) {
     const xuid = await returnXuid(gamertag);
     const xl = await xboxRequester();
     const request = await xl.people.presence.get(xuid);
-    const data = {
-        state: request[0].state,
-        lastSeenDeviceType: request[0].lastSeen.deviceType,
-        lastSeenTitleId: request[0].lastSeen.titleId,
-        lastSeenTitleName: request[0].lastSeen.titleName,
-        lastSeenTimestamp: request[0].lastSeen.timestamp,
-    };
-    return data;
+    return request;
+    // se (state = Offline) => request[0].lastSeen
+    // se (state = Online) => request[0].devices
 };
 
 // Mostra últimos clipes
-async function getLastClips(gamertag: string, amount: number = 10 + 6) {
+async function getLastClips(gamertag: string, amount: number = 10) {
     const xuid = await returnXuid(gamertag);
     const xl = await xboxRequester();
-    const request = await xl.people.gameclip.get(xuid, amount);
+    const request = await xl.people.gameclip.get(xuid, amount + 6);
     const videoDataArray = [];
-    for (let i = 0; i < request.items.length; i++) {
-        const element = request.items[i];
+    for (const element of request.items) {
         const videoData = {
-            clipThumbnail: element.clipThumbnail,
-            downloadUri: element.downloadUri,
-            dateRecorded: element.dateRecorded,
-            contentImageUri: element.contentImageUri,
             contentTitle: element.contentTitle,
+            contentImageUri: element.contentImageUri,
+            downloadUri: element.downloadUri,
+            clipThumbnail: element.clipThumbnail,
+            dateRecorded: element.dateRecorded,
             platform: element.platform,
         };
         videoDataArray.push(videoData);
@@ -106,28 +141,42 @@ async function getLastClips(gamertag: string, amount: number = 10 + 6) {
 };
 
 // Lista amigos do usuário
-async function getFriendsList(gamertag: string) {
+async function getFriendsList(gamertag: string, page: number = 0, pagination: number = 10) {
     const xuid = await returnXuid(gamertag);
     const xl = await xboxRequester();
     const request = await xl.people.friends.get(xuid);
-    return request;
+    const friendsData = request.people.slice((page * pagination), ((page * pagination) + pagination));
+    const friendsArray = [];
+    for (const element of friendsData) {
+        const data = {
+            xuid: element.xuid,
+            gamertag: element.gamertag,
+            realName: element.realName,
+            displayPicRaw: element.displayPicRaw,
+            gamerScore: element.gamerScore,
+            presenceState: element.presenceState,
+            presenceText: element.presenceText,
+        };
+        friendsArray.push(data);
+    }
+    return friendsArray;
 };
 
-// Lista TODAS as conquistas
-async function getAllAchievements(gamertag: string) {
-    const xuid = await returnXuid(gamertag);
-    const xl = await xboxRequester();
-    const request = await xl.people.achievement.titles.complete.get(xuid);
-    return request;
-};
+// // Lista TODAS as conquistas
+// async function getAllAchievements(gamertag: string) {
+//     const xuid = await returnXuid(gamertag);
+//     const xl = await xboxRequester();
+//     const request = await xl.people.achievement.titles.complete.get(xuid);
+//     return request;
+// };
 
-// *Mais inútil* Lista todos os jogos que obteve conquista
-async function getAllGamesAndAchievementsList(gamertag: string) {
-    const xuid = await returnXuid(gamertag);
-    const xl = await xboxRequester();
-    const request = await xl.people.achievement.titles.get(xuid);
-    return request;
-};
+// // *Mais inútil* Lista todos os jogos que obteve conquista
+// async function getAllGamesAndAchievementsList(gamertag: string) {
+//     const xuid = await returnXuid(gamertag);
+//     const xl = await xboxRequester();
+//     const request = await xl.people.achievement.titles.get(xuid);
+//     return request;
+// };
 
 // Adiciona aos amigos
 // xl.people.add(xuid).then(() => {
@@ -156,12 +205,12 @@ const accountServices = {
     getAccountData,
     getAchievements,
     getLastAchievements,
-    getAllGames,
+    // getAllGames,
     getStatusOnLine,
     getLastClips,
     getFriendsList,
-    getAllAchievements,
-    getAllGamesAndAchievementsList,
+    // getAllAchievements,
+    // getAllGamesAndAchievementsList,
 };
 
 export default accountServices;

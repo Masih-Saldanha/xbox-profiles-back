@@ -26,13 +26,13 @@ async function getLastAchievements(req: Request, res: Response) {
     res.send(achievements).status(200);
 };
 
-async function getAllGames(req: Request, res: Response) {
-    const gamertag = req.params.gamertag;
+// async function getAllGames(req: Request, res: Response) {
+//     const gamertag = req.params.gamertag;
 
-    const achievements = await accountServices.getAllGames(gamertag);
+//     const achievements = await accountServices.getAllGames(gamertag);
 
-    res.send(achievements).status(200);
-};
+//     res.send(achievements).status(200);
+// };
 
 async function getStatusOnLine(req: Request, res: Response) {
     const gamertag = req.params.gamertag;
@@ -58,32 +58,32 @@ async function getFriendsList(req: Request, res: Response) {
     res.send(achievements).status(200);
 };
 
-async function getAllAchievements(req: Request, res: Response) {
-    const gamertag = req.params.gamertag;
+// async function getAllAchievements(req: Request, res: Response) {
+//     const gamertag = req.params.gamertag;
 
-    const achievements = await accountServices.getAllAchievements(gamertag);
+//     const achievements = await accountServices.getAllAchievements(gamertag);
 
-    res.send(achievements).status(200);
-};
+//     res.send(achievements).status(200);
+// };
 
-async function getAllGamesAndAchievementsList(req: Request, res: Response) {
-    const gamertag = req.params.gamertag;
+// async function getAllGamesAndAchievementsList(req: Request, res: Response) {
+//     const gamertag = req.params.gamertag;
 
-    const achievements = await accountServices.getAllGamesAndAchievementsList(gamertag);
+//     const achievements = await accountServices.getAllGamesAndAchievementsList(gamertag);
 
-    res.send(achievements).status(200);
-};
+//     res.send(achievements).status(200);
+// };
 
 const accountController = {
     getAccountData,
     getAchievements,
     getLastAchievements,
-    getAllGames,
+    // getAllGames,
     getStatusOnLine,
     getLastClips,
     getFriendsList,
-    getAllAchievements,
-    getAllGamesAndAchievementsList,
+    // getAllAchievements,
+    // getAllGamesAndAchievementsList,
 };
 
 export default accountController;
