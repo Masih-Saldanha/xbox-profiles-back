@@ -8,9 +8,9 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:deploy": "prisma migrate deploy",
     "prisma:seed": "prisma db seed",
-    "build": "tsc",
+    "build": "npm install && tsc && npx prisma migrate deploy",
+    "start": "node /opt/render/project/src/dist/src/index.js",
     "dev": "nodemon src/index.ts",
-    "start": "npm run prisma:deploy && node dist/index.js",
     "test": "dotenv -e .env.test prisma migrate dev && dotenv -e .env.test cross-env NODE_OPTIONS=--experimental-vm-modules jest -- -i"
   },
   "prisma": {
