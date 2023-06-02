@@ -1,6 +1,7 @@
 import axl from "app-xbox-live";
 
 import accountRepository from "../repositories/accountRepository.js";
+import { throwError } from "../utils/errorTypeUtils.js";
 
 function xboxRequester() {
     const email = process.env.TOKEN_EMAIL;
@@ -13,6 +14,11 @@ async function getXuidFromApi(gamertag: string) {
     const amount = 15;
     const xl = await xboxRequester();
     const request = await xl.people.find(gamertag, amount).then();
+    throwError(
+        !request.people[0],
+        "Not Found",
+        `The gamertag: "${gamertag}" doesn't exist, inform a valid one!`
+    );
     const xuid: string = request.people[0].xuid;
     return xuid;
 };
@@ -29,10 +35,55 @@ async function returnXuid(gamertag: string) {
     }
 };
 
+async function getAccountAndAchievementsData(gamertag: string, page: number = 0, pagination: number = 10) {
+    const xuid = await returnXuid(gamertag);
+    const xl = await xboxRequester();
+
+    const requestGamerTag = await xl.people.get(xuid);
+    const gamerTagData = {
+        displayPicRaw: requestGamerTag.people[0].displayPicRaw,
+        gamertag: requestGamerTag.people[0].gamertag,
+        gamerScore: requestGamerTag.people[0].gamerScore,
+        accountTier: requestGamerTag.people[0].detail.accountTier,
+        hasGamePass: requestGamerTag.people[0].detail.hasGamePass,
+        followerCount: requestGamerTag.people[0].detail.followerCount,
+        followingCount: requestGamerTag.people[0].detail.followingCount,
+    };
+
+    const request = await xl.people.achievement.all.get(xuid);
+    const paginatedData = request.titles.slice((page * pagination), ((page * pagination) + pagination));
+    const achievementList = [];
+    for (const element of paginatedData) {
+        const data = {
+            titleId: element.titleId,
+            name: element.name,
+            type: element.type,
+            displayImage: element.displayImage,
+            achievement: {
+                currentAchievements: element.achievement.currentAchievements,
+                totalAchievements: element.achievement.totalAchievements,
+                currentGamerscore: element.achievement.currentGamerscore,
+                totalGamerscore: element.achievement.totalGamerscore,
+                progressPercentage: element.achievement.progressPercentage,
+            },
+            isGamePass: element.gamePass.isGamePass,
+            lastTimePlayed: element.titleHistory.lastTimePlayed,
+            xboxLiveTier: element.xboxLiveTier,
+        };
+        achievementList.push(data);
+    };
+
+    return {
+        gamerTagData,
+        achievementList,
+    };
+};
+
 async function getAccountData(gamertag: string) {
     const xuid = await returnXuid(gamertag);
     const xl = await xboxRequester();
     const request = await xl.people.get(xuid);
+    // console.log(request);
     const accountData = {
         displayPicRaw: request.people[0].displayPicRaw,
         gamertag: request.people[0].gamertag,
@@ -202,6 +253,7 @@ async function getFriendsList(gamertag: string, page: number = 0, pagination: nu
 // });
 
 const accountServices = {
+    getAccountAndAchievementsData,
     xboxRequester,
     getAccountData,
     getAchievements,

@@ -4,6 +4,7 @@ import accountController from "../controllers/accountController.js";
 
 const accountRouter = Router();
 
+accountRouter.get("/accountandachievements/:gamertag", accountController.getAccountAndAchievements);
 accountRouter.get("/accountdata/:gamertag", accountController.getAccountData);
 accountRouter.get("/achievements/:gamertag", accountController.getAchievements);
 accountRouter.get("/lastachievements/:gamertag", accountController.getLastAchievements);

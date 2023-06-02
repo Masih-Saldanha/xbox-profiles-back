@@ -3,6 +3,14 @@ import { Request, Response } from "express";
 import accountServices from "../services/accountServices.js";
 // import gameServices from "../services/gameServices.js";
 
+async function getAccountAndAchievements(req: Request, res: Response) {
+    const gamertag = req.params.gamertag;
+
+    const accountData = await accountServices.getAccountAndAchievementsData(gamertag);
+
+    res.send(accountData).status(200);
+};
+
 async function getAccountData(req: Request, res: Response) {
     const gamertag = req.params.gamertag;
 
@@ -82,6 +90,7 @@ async function getFriendsList(req: Request, res: Response) {
 // };
 
 const accountController = {
+    getAccountAndAchievements,
     getAccountData,
     getAchievements,
     getLastAchievements,
